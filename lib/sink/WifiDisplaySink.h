@@ -87,6 +87,7 @@ struct WifiDisplaySink : public AHandler {
     void setDisplay(const sp<IGraphicBufferProducer>& bufferProducer);
     void start(const char *sourceHost, int32_t sourcePort);
     void start(const char *uri);
+	void stop();
 
 protected:
     virtual ~WifiDisplaySink();

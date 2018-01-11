@@ -10,15 +10,17 @@ endif
 
 LOCAL_SRC_FILES := $(call all-subdir-java-files)
 
-LOCAL_JAVA_LIBRARIES := com.broadcom.bt javax.obex
+#LOCAL_JAVA_LIBRARIES := com.broadcom.bt javax.obex
 
 LOCAL_PACKAGE_NAME := WifiDisplaySink
 LOCAL_CERTIFICATE := platform
 
+LOCAL_DEX_PREOPT := false
 LOCAL_PROGUARD_ENABLED := disabled
 
 LOCAL_JNI_SHARED_LIBRARIES := libWifiDisplaySink
 LOCAL_REQUIRED_MODULES := libWifiDisplaySink
 
 include $(BUILD_PACKAGE)
+
 include $(call all-makefiles-under, $(LOCAL_PATH))

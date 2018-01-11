@@ -139,6 +139,13 @@ WifiDisplaySink::WifiDisplaySink(
 
 }
 
+void WifiDisplaySink::stop() {
+	if(mSessionID) {
+		mNetSession->destroySession(mSessionID);
+		mSessionID = 0;
+	}
+}
+
 WifiDisplaySink::~WifiDisplaySink() {
 }
 

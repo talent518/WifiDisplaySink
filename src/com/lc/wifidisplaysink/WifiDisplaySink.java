@@ -10,6 +10,8 @@ import android.os.Message;
 import android.view.SurfaceHolder;
 import android.view.Surface;
 
+import com.lc.wifidisplaysink.WifiDisplaySinkActivity;
+
 public class WifiDisplaySink{
     private final static String TAG = "WifiDisplaySinkJ";
 
@@ -60,9 +62,9 @@ public class WifiDisplaySink{
         }
         Log.d(TAG, "setDisplay surface = "+surface);
         native_setVideoSurface(surface);
-        if (mSurfaceHolder != null) {
+        /*if (mSurfaceHolder != null) {
             mSurfaceHolder.setKeepScreenOn(true);
-        }
+        }*/
     }
 
     public void invoke(String ip, int port) {
@@ -73,6 +75,10 @@ public class WifiDisplaySink{
         native_invokeSink(ip, port);   
         postEventFromNative(null, WFD_NOP, 0, 0, 0); // proguard
     }
+
+	public void destory() {
+		native_destory();
+	}
 
     private static void postEventFromNative(Object sink_ref,
                                         int what, int arg1, int arg2, Object obj)
@@ -93,28 +99,13 @@ public class WifiDisplaySink{
             Message m = sink.mEventHandler.obtainMessage(what, arg1, arg2, obj);
             sink.mEventHandler.sendMessage(m);
         }
-
-        return;
-/*
-        if (what == WFD_INFO && arg1 == WFD_INFO_RTSP_TEARDOWN) {
-            Log.d("WifiDisplaySink", "postEventFromNative, WFD_INFO_RTSP_TEARDOWN");
-            //native_release();
-            System.exit(0); // FIXME
-        }
-
-        if (what == WFD_ERROR) {
-            Log.d("WifiDisplaySink", "postEventFromNative, WFD_ERROR, we should notify to finish the activity?");
-        }
-
-        Log.d("WifiDisplaySink", "postEventFromNative, what:" + what);
-        return;
-*/
     }
 
     private static native final void native_init();
     private native final void native_setup(Object sink_this, int special, int isN10);
     private native final void native_invokeSink(String ip, int port);
     private native final void native_setVideoSurface(Surface surface);
+    private native final void native_destory();
 
     private long mNativeContext;
     private int mListenerContext;
@@ -173,13 +164,13 @@ public class WifiDisplaySink{
                     Log.d(TAG, "mOnErrorListener.onError");
                     mOnErrorListener.onError(mWifiDisplaySink, msg.arg1, msg.arg2);
                 }
-                return;
+                WifiDisplaySinkActivity.activity.finish();
+				break;
 
             case WFD_INFO:
                 if (msg.arg1 == WFD_INFO_RTSP_TEARDOWN) {
                     Log.d("WifiDisplaySink", "postEventFromNative, WFD_INFO_RTSP_TEARDOWN");
-                    //native_release();
-                    System.exit(0); // FIXME
+                    WifiDisplaySinkActivity.activity.finish();
                 }
                 break;
 
@@ -188,7 +179,6 @@ public class WifiDisplaySink{
 
             default:
                 Log.e(TAG, "Unknown message type " + msg.what);
-                return;
             }
         }
     }

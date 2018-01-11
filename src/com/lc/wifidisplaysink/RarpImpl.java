@@ -35,10 +35,10 @@ public class RarpImpl {
             return null;
         }
 
-        int i = 0;
+        /*int i = 0;
         for (String line : lines) {
             Log.d(TAG, "execRarp() [" + (i++) + "]" + line);
-        }
+        }*/
 
         ArrayList<ArpType> arps = parseArp(lines);
         if (arps == null || arps.size() == 0) {
@@ -135,15 +135,14 @@ public class RarpImpl {
         }
 
         int len = seps.length;
-        // arp行
+
         if (len == 6) {
             ArpType arp = new ArpType(seps[0], seps[1], seps[2], seps[3], seps[4], seps[5]);
-            Log.d(TAG, "parseArpLine() created arp["+arp.toString()+"]");
+            //  Log.d(TAG, "parseArpLine() created arp["+arp.toString()+"]");
             return arp;
         } else {
-            // ヘッダ
             if (seps.length == 9 && seps[0].equals("IP") && seps[8].equals("Device")) {
-                Log.i(TAG, "parseArpLine() this is header line. don't create arp["+line+"]");
+                // Log.i(TAG, "parseArpLine() this is header line. don't create arp["+line+"]");
             } else {
                 StringBuffer buf = new StringBuffer();
                 for (int i = 0; i < seps.length; i++) {
@@ -203,11 +202,11 @@ public class RarpImpl {
 
         public String toString() {
             String ret = 
-                " IP address:" + mIPaddress + "¥n" +
-                " HW type:" + mHWType + "¥n" +
-                " Flags:" + mFlags + "¥n" +
-                " HW address:" + mHWaddress + "¥n" +
-                " Mask:" + mMask + "¥n" +
+                " IP address:" + mIPaddress + "," +
+                " HW type:" + mHWType + "," +
+                " Flags:" + mFlags + "," +
+                " HW address:" + mHWaddress + "," +
+                " Mask:" + mMask + "," +
                 " Device:" + mDevice;
             return ret;
         }

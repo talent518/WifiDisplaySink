@@ -11,7 +11,7 @@ LOCAL_C_INCLUDES += \
     $(TOP)/frameworks/native/include/media/openmax \
     $(TOP)/frameworks/base/include \
     $(TOP)/frameworks/av/include/media/stagefright/foundation \
-    $(TOP)/leadcore/packages/apps/WifiDisplaySink/lib
+    $(TOP)/packages/apps/WifiDisplaySink/lib
 
 LOCAL_SHARED_LIBRARIES:= \
     libbinder                       \

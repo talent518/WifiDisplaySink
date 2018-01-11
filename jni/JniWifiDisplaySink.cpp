@@ -305,6 +305,16 @@ com_lc_wifidisplaysink_WifiDisplaySink_native_setVideoSurface(JNIEnv *env, jobje
     }
 }
 
+static void
+com_lc_wifidisplaysink_WifiDisplaySink_native_destory(JNIEnv *env, jobject thiz) {
+	WfdNativeContext *ctx = getWfdNativeContext(env, thiz);
+
+	ctx->mWifiDisplaySink->stop();
+	ctx->mLooper->stop();
+
+	delete ctx;
+}
+
 static JNINativeMethod gMethods[] = {
     {"native_init", "()V", (void *)com_lc_wifidisplaysink_WifiDisplaySink_native_init},
     {"native_setup", "(Ljava/lang/Object;II)V", (void *)com_lc_wifidisplaysink_WifiDisplaySink_native_setup},
@@ -314,6 +324,7 @@ static JNINativeMethod gMethods[] = {
         (void *)com_lc_wifidisplaysink_WifiDisplaySink_nativeInvokeSink
     },
     {"native_setVideoSurface", "(Landroid/view/Surface;)V", (void *)com_lc_wifidisplaysink_WifiDisplaySink_native_setVideoSurface},
+	{"native_destory", "()V", (void *)com_lc_wifidisplaysink_WifiDisplaySink_native_destory}
 };
 
 jint JNI_OnLoad(JavaVM* vm, void* /* reserved */) {

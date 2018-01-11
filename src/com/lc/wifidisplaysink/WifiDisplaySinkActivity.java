@@ -59,6 +59,7 @@ import android.content.ComponentName;
 import android.os.IBinder;
 
 public class WifiDisplaySinkActivity extends Activity {
+	public static WifiDisplaySinkActivity activity;
     private final String TAG = "WifiDisplaySinkActivity";
 
     private String mSourceAddr;
@@ -89,6 +90,8 @@ public class WifiDisplaySinkActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifidisplay_sink);
+
+		activity = this;
 
         View rootView = findViewById(R.id.movie_view_root); 
 
@@ -122,22 +125,21 @@ public class WifiDisplaySinkActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        // System.exit(0);  // ?
-    }
-
-    @Override
     protected void onDestroy() {
-        unbindService(mConn);
+		if(mConn != null) {
+			unbindService(mConn);
+			mConn = null;
+		}
+		super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
+		if(mConn != null) {
+			unbindService(mConn);
+			mConn = null;
+		}
         super.onBackPressed();
-        unbindService(mConn);
-        finish();
-        System.exit(0);
     }
 
 }

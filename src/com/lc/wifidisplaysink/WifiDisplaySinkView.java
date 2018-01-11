@@ -36,7 +36,6 @@ public class WifiDisplaySinkView extends SurfaceView {
         requestFocus();
         Log.d(TAG, "WifiDisplaySink.create");
         mSink = WifiDisplaySink.create(mContext);
-
     }
 
     public WifiDisplaySinkView(Context context) {
@@ -98,9 +97,9 @@ public class WifiDisplaySinkView extends SurfaceView {
             // after we return from this we can't use the surface any more
             mSurfaceHolder = null;
             //release(true);
+			mSink.destory();
         }
     };
-
 
     private int mLastX= 0xffff, mLastY= 0xffff, mCurrentX= 0xffff, mCurrentY = 0xffff;
     private int mDownX= 0xffff, mDownY= 0xffff, mUpX= 0xffff, mUpY = 0xffff;

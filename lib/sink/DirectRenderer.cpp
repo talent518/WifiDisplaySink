@@ -279,7 +279,7 @@ void DirectRenderer::DecoderContext::onDecoderNotify() {
         } else if (err == -EAGAIN) {
             break;
         } else {
-            TRESPASS();
+            // TRESPASS();
         }
     }
 

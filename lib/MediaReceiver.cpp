@@ -258,8 +258,8 @@ void MediaReceiver::drainPackets(
         sp<MetaData> meta = source->getFormat();
         CHECK(meta != NULL);
 
-        meta->setInt32(kKeyRotation, 90); // yangxudong
-        ALOGD("####################kKeyRotation 90");
+        meta->setInt32(kKeyRotation, -90); // yangxudong
+        ALOGD("####################kKeyRotation -90");
 
         CHECK_EQ((status_t)OK, convertMetaDataToMessage(meta, &format));
 
