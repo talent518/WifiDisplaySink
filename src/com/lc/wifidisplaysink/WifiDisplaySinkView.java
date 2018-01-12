@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import com.lc.wifidisplaysink.WifiDisplaySink;
 import com.lc.wifidisplaysink.WifiDisplaySink.OnErrorListener;
 import com.lc.wifidisplaysink.WifiDisplaySinkUtils;
-import com.lc.wifidisplaysink.HidDeviceAdapterService;
 
 
 public class WifiDisplaySinkView extends SurfaceView {
@@ -23,7 +22,6 @@ public class WifiDisplaySinkView extends SurfaceView {
     private Context mContext = null;
     private WifiDisplaySink mSink;
     private WifiDisplaySink.OnErrorListener mOnErrorListener;
-    private HidDeviceAdapterService mHidDeviceAdapterService;
 
     private int         mSurfaceWidth;
     private int         mSurfaceHeight;
@@ -67,11 +65,6 @@ public class WifiDisplaySinkView extends SurfaceView {
         mOnErrorListener = l;
     }
 
-    public void setHidDeviceAdapterService(HidDeviceAdapterService service) {
-        Log.d(TAG, "setHidDeviceAdapterService");
-        mHidDeviceAdapterService = service;
-    }
-
     SurfaceHolder.Callback mSHCallback = new SurfaceHolder.Callback()
     {
         public void surfaceChanged(SurfaceHolder holder, int format,
@@ -100,57 +93,4 @@ public class WifiDisplaySinkView extends SurfaceView {
 			mSink.destory();
         }
     };
-
-    private int mLastX= 0xffff, mLastY= 0xffff, mCurrentX= 0xffff, mCurrentY = 0xffff;
-    private int mDownX= 0xffff, mDownY= 0xffff, mUpX= 0xffff, mUpY = 0xffff;
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-         switch (event.getAction()) {
-             case MotionEvent.ACTION_DOWN:
-                 Log.d(TAG,"DOWN getX()="+event.getX()+"getY()"+event.getY());
-                 mLastX = (int)event.getX();
-                 mLastY = (int)event.getY();
-                 mDownX = (int)event.getX();
-                 mDownY = (int)event.getY();
-                 //return false;
-                 return true;
-             case MotionEvent.ACTION_UP:
-                 Log.d(TAG,"UP getX()="+event.getX()+"getY()"+event.getY());
-
-                 mUpX = (int)event.getX();
-                 mUpY = (int)event.getY();
-                 if(Math.abs(mUpX - mDownX) < 15 && Math.abs(mUpY - mDownY) < 15) {
-                     Log.d(TAG, "send click");
-                     if (mHidDeviceAdapterService != null) {
-                        mHidDeviceAdapterService.sendLeftClickReport();
-                     }
-                 }
-                 //return false;
-                 return true;
-             case MotionEvent.ACTION_MOVE:
-                 Log.d(TAG,"MOVE getX()="+event.getX()+"getY()"+event.getY());
-                 mCurrentX = (int)event.getX();
-                 mCurrentY = (int)event.getY();
-
-                 int dx= mCurrentX-mLastX;
-                 int dy= mCurrentY-mLastY;
-                 byte Bdx = (byte)dx;
-                 byte Bdy = (byte)dy;
-
-                 //Log.d(TAG, "Mouse after" + "Bdx="+ Bdx + " Bdy=" + Bdy);
-                 Log.d(TAG, "send move");
-                 if (mHidDeviceAdapterService != null) {
-                    mHidDeviceAdapterService.sendMouseMoveReport(Bdx, Bdy);
-                 }
-                 mLastX=mCurrentX;
-                 mLastY=mCurrentY;
-
-                 //return false;
-                 return true;
-             default:
-                 break;
-         }
-         return false;
-    }
 }

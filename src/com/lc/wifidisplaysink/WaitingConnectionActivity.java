@@ -57,7 +57,6 @@ import android.os.Message;
 import android.os.Looper;
 import com.lc.wifidisplaysink.WifiDisplaySink;
 import com.lc.wifidisplaysink.WifiDisplaySinkConstants;
-import com.lc.wifidisplaysink.HidDeviceAdapterService;
 
 public class WaitingConnectionActivity extends Activity {
 	private static final String TAG = "WaitingConnectionActivity";
@@ -118,9 +117,6 @@ public class WaitingConnectionActivity extends Activity {
 		runConnectingAnimation();
 		utilsCheckP2pFeature();  // final WifiManager
 		mContext = this;
-
-		Intent startIntent = new Intent(this, HidDeviceAdapterService.class);
-		startService(startIntent);
 	}
 
 	protected void cleanWifiP2pManager() {
@@ -164,20 +160,26 @@ public class WaitingConnectionActivity extends Activity {
 	}
 
 	@Override
-	protected void onDestroy() {
-		if (mWifiP2pManager != null) {
-			mWifiP2pManager.cancelConnect(mChannel, null);
-			mWifiP2pManager.clearLocalServices(mChannel, null);
-			mWifiP2pManager.removeGroup(mChannel, null);
-			mWifiP2pManager.stopPeerDiscovery(mChannel, null);
-			mWifiP2pManager.discoverServices(mChannel, null);
-			mWifiP2pManager.discoverPeers(mChannel, null);
-			mWifiP2pManager = null;
-		}
+	public void onBackPressed() {
+		super.onBackPressed();
+
+		cleanWifiP2pManager();
 
 		unRegisterBroadcastReceiver();
 
+		System.exit(0);
+	}
+
+
+	@Override
+	protected void onDestroy() {
 		super.onDestroy();
+
+		cleanWifiP2pManager();
+
+		unRegisterBroadcastReceiver();
+
+		System.exit(0);
 	}
 
 	private void registerBroadcastReceiver() {
@@ -310,7 +312,7 @@ public class WaitingConnectionActivity extends Activity {
 
 		Log.d(TAG, "P2P Channel: "+ mChannel );
 
-		 mWifiP2pManager.setDeviceName(mChannel,
+		mWifiP2pManager.setDeviceName(mChannel,
 				 mName,
 				 new WifiP2pManager.ActionListener() {
 			 public void onSuccess() {
@@ -341,7 +343,6 @@ public class WaitingConnectionActivity extends Activity {
 			}
 		});
 	}
-
 
 	public void p2pDiscoverPeers() {
 		Log.d(TAG, "p2pDiscoverPeers()");
@@ -437,7 +438,6 @@ public class WaitingConnectionActivity extends Activity {
 				if (mConnected) {
 					mConnected = false;
 					Log.d(TAG, "disconnected");
-					p2pInitialize();
 				}
 			}
 
@@ -492,7 +492,6 @@ public class WaitingConnectionActivity extends Activity {
 
 	private void startWfdSink(Context context, Intent intent) {
 		WifiP2pInfo wifiP2pInfo = (WifiP2pInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO);
-		//NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 		WifiP2pGroup wifiP2pGroupInfo = (WifiP2pGroup) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP);
 
 		mP2pControlPort = 7236;

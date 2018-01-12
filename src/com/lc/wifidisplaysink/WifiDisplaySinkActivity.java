@@ -53,8 +53,6 @@ import android.os.Looper;
 import com.lc.wifidisplaysink.WifiDisplaySink;
 import com.lc.wifidisplaysink.WifiDisplaySinkConstants;
 import com.lc.wifidisplaysink.WifiDisplaySinkUtils;
-import com.lc.wifidisplaysink.HidDeviceAdapterService;
-import android.content.ServiceConnection;
 import android.content.ComponentName;
 import android.os.IBinder;
 
@@ -67,24 +65,6 @@ public class WifiDisplaySinkActivity extends Activity {
     private WifiDisplaySink mSink;
 
     private WifiDisplaySinkView mWifiDisplaySinkView;
-
-    HidDeviceAdapterService mHidDeviceAdapterService;
-
-    private ServiceConnection mConn = new ServiceConnection() {
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "onServiceConnected");
-            if (service != null) {
-                mHidDeviceAdapterService = ((HidDeviceAdapterService.HidDeviceAdapterBinder) service).getService();
-                if (mHidDeviceAdapterService != null)
-                    mWifiDisplaySinkView.setHidDeviceAdapterService(mHidDeviceAdapterService);
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "onServiceDisconnected");
-            mHidDeviceAdapterService = null;
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,9 +93,6 @@ public class WifiDisplaySinkActivity extends Activity {
         Log.d(TAG, "addr:" + mSourceAddr + " | port:" + mSourcePort);
 
         mWifiDisplaySinkView.setSourceIpAddr(mSourceAddr, mSourcePort);
-
-        Intent intent = new Intent(this, HidDeviceAdapterService.class);
-        bindService(intent, mConn, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -126,19 +103,11 @@ public class WifiDisplaySinkActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-		if(mConn != null) {
-			unbindService(mConn);
-			mConn = null;
-		}
 		super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
-		if(mConn != null) {
-			unbindService(mConn);
-			mConn = null;
-		}
         super.onBackPressed();
     }
 
