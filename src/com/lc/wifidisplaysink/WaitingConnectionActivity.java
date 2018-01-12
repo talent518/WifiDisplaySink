@@ -3,7 +3,6 @@ package com.lc.wifidisplaysink;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +41,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -127,6 +127,9 @@ public class WaitingConnectionActivity extends Activity {
 			mWifiP2pManager.stopPeerDiscovery(mChannel, null);
 			mWifiP2pManager.discoverServices(mChannel, null);
 			mWifiP2pManager.discoverPeers(mChannel, null);
+			mWifiP2pManager = null;
+			mChannel = null;
+
 		}
 		p2pDiscoverPeers();
 	}
@@ -226,7 +229,17 @@ public class WaitingConnectionActivity extends Activity {
 			}
 		}
 
-		mName = Build.MODEL + "-" + Long.toHexString(file.lastModified());
+		long i = file.lastModified();
+		byte[] bytes = new byte[] {
+            (byte) ((i >> 40) & 0xFF),
+            (byte) ((i >> 32) & 0xFF),
+            (byte) ((i >> 24) & 0xFF),
+                    (byte) ((i >> 16) & 0xFF),
+                    (byte) ((i >> 8) & 0xFF),
+                    (byte) (i & 0xFF)
+        };
+
+		mName = Build.MODEL + "-" + Base64.encodeToString(bytes, Base64.DEFAULT).substring(2, 8);
 
 		mConnectingTextView.setText("\n" + mName + "\n\n" + getResources().getString(R.string.connecting_textview));
 		mConnectingTextView.setTextColor(Color.parseColor("#ffffff00"));
@@ -537,8 +550,6 @@ public class WaitingConnectionActivity extends Activity {
 		Intent itent = new Intent(this, WifiDisplaySinkActivity.class);
 		itent.putExtra(WifiDisplaySinkConstants.SOURCE_PORT, sourcePort);
 		itent.putExtra(WifiDisplaySinkConstants.SOURCE_ADDR, sourceAddr);
-
-		utilsToastLog("source port: " + sourcePort, "source ip addr:  " + sourceAddr);
 
 		startActivity(itent);
 		onPause();

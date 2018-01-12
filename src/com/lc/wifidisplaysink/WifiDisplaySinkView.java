@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 
 import com.lc.wifidisplaysink.WifiDisplaySink;
 import com.lc.wifidisplaysink.WifiDisplaySink.OnErrorListener;
+import com.lc.wifidisplaysink.WifiDisplaySinkActivity;
 import com.lc.wifidisplaysink.WifiDisplaySinkUtils;
 
 
@@ -91,6 +92,7 @@ public class WifiDisplaySinkView extends SurfaceView {
             mSurfaceHolder = null;
             //release(true);
 			mSink.destory();
+			WifiDisplaySinkActivity.activity.finish();
         }
     };
 }
