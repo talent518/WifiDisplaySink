@@ -42,6 +42,7 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -117,6 +118,9 @@ public class WaitingConnectionActivity extends Activity {
 		runConnectingAnimation();
 		utilsCheckP2pFeature();  // final WifiManager
 		mContext = this;
+
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+        Log.v(TAG, "DisplayMetrics.widthPixels = " + dm.widthPixels + ", DisplayMetrics.heightPixels" + dm.heightPixels);
 	}
 
 	protected void cleanWifiP2pManager() {
@@ -340,7 +344,7 @@ public class WaitingConnectionActivity extends Activity {
 
 		WifiP2pWfdInfo wfdInfo = new WifiP2pWfdInfo();
 		wfdInfo.setWfdEnabled(true);
-		wfdInfo.setDeviceType(WifiP2pWfdInfo.SOURCE_OR_PRIMARY_SINK);
+		wfdInfo.setDeviceType(WifiP2pWfdInfo.PRIMARY_SINK);
 		wfdInfo.setSessionAvailable(true);
 		wfdInfo.setControlPort(7236);
 		wfdInfo.setMaxThroughput(50);
