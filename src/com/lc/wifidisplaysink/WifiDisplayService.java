@@ -1,11 +1,13 @@
 package com.lc.wifidisplaysink;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -94,25 +96,39 @@ public class WifiDisplayService extends Service {
 
 		File file = new File(Environment.getDataDirectory(), getPackageName() + ".p2p");
 		Log.v(TAG, file.getAbsolutePath());
-		if(!file.exists()) {
+		if(file.exists()) {
 			try {
-				new FileOutputStream(file).close();
-			} catch (IOException e) {
+				FileInputStream in = new FileInputStream(file);
+				byte[] bytes = new byte[128];
+				if(in.read(bytes, 0, bytes.length) > 0) {
+					mName = new String(bytes, "utf-8");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if(mName == null) {
+			Random random = new Random();
+			int i = random.nextInt();
+			byte[] bytes = new byte[] {
+				(byte) ((i >> 40) & 0xFF),
+				(byte) ((i >> 32) & 0xFF),
+				(byte) ((i >> 24) & 0xFF),
+						(byte) ((i >> 16) & 0xFF),
+						(byte) ((i >> 8) & 0xFF),
+						(byte) (i & 0xFF)
+			};
+			mName = Build.MODEL + "-" + Base64.encodeToString(bytes, Base64.DEFAULT).substring(2, 8);
+			try {
+				FileOutputStream out = new FileOutputStream(file);
+				out.write(mName.getBytes("utf-8"));
+				out.close();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		long i = file.lastModified();
-		byte[] bytes = new byte[] {
-			(byte) ((i >> 40) & 0xFF),
-			(byte) ((i >> 32) & 0xFF),
-			(byte) ((i >> 24) & 0xFF),
-					(byte) ((i >> 16) & 0xFF),
-					(byte) ((i >> 8) & 0xFF),
-					(byte) (i & 0xFF)
-		};
-
-		mName = Build.MODEL + "-" + Base64.encodeToString(bytes, Base64.DEFAULT).substring(2, 8);
 
 		utilsCheckP2pFeature();  // final WifiManager
 
