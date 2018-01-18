@@ -92,7 +92,8 @@ public class WifiDisplayService extends Service {
 		Log.d(TAG, "onCreate()");
 		super.onCreate();
 
-		File file = new File(Environment.getDataDirectory(), "p2p.lock");
+		File file = new File(Environment.getDataDirectory(), getPackageName() + ".p2p");
+		Log.v(TAG, file.getAbsolutePath());
 		if(!file.exists()) {
 			try {
 				new FileOutputStream(file).close();
@@ -103,13 +104,13 @@ public class WifiDisplayService extends Service {
 
 		long i = file.lastModified();
 		byte[] bytes = new byte[] {
-            (byte) ((i >> 40) & 0xFF),
-            (byte) ((i >> 32) & 0xFF),
-            (byte) ((i >> 24) & 0xFF),
-                    (byte) ((i >> 16) & 0xFF),
-                    (byte) ((i >> 8) & 0xFF),
-                    (byte) (i & 0xFF)
-        };
+			(byte) ((i >> 40) & 0xFF),
+			(byte) ((i >> 32) & 0xFF),
+			(byte) ((i >> 24) & 0xFF),
+					(byte) ((i >> 16) & 0xFF),
+					(byte) ((i >> 8) & 0xFF),
+					(byte) (i & 0xFF)
+		};
 
 		mName = Build.MODEL + "-" + Base64.encodeToString(bytes, Base64.DEFAULT).substring(2, 8);
 

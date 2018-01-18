@@ -497,7 +497,7 @@ void WifiDisplaySink::onMediaReceiverNotify(const sp<AMessage> &msg) {
 
         case MediaReceiver::kWhatPacketLost:
         {
-#if 1
+#if 0
             if (!mIDRFrameRequestPending) {
                 ALOGI("requesting IDR frame");
 
