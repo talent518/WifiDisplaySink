@@ -63,7 +63,13 @@
 			</intent-filter>
 		</receiver>
 
-		<service android:name=".WifiDisplayService" />
+		<service
+			android:name=".WifiDisplayService"
+			android:enabled="true">
+			<intent-filter>
+				<action android:name="com.lc.wifidisplaysink.WifiDisplayService" />
+			</intent-filter>
+		</service>
 
 	</application>
 

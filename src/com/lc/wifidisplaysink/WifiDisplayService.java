@@ -61,15 +61,6 @@ public class WifiDisplayService extends Service {
 		return mName;
 	}
 
-	private Runnable mConnectingChecker = new Runnable() {
-		@Override
-		public void run() {
-			p2pDiscoverPeers();
-			
-			mHandler.postDelayed(mConnectingChecker, 1*1000*30); //TODO: to give a resonable check time.
-		}
-	};
-
 	private Runnable mRarpChecker = new Runnable() {
 		@Override
 		public void run() {
@@ -271,15 +262,16 @@ public class WifiDisplayService extends Service {
 		Log.d(TAG, "P2P Channel: "+ mChannel );
 
 		mWifiP2pManager.setDeviceName(mChannel,
-				 mName,
-				 new WifiP2pManager.ActionListener() {
-			 public void onSuccess() {
-				 Log.d(TAG, " device rename success");
-			 }
-			 public void onFailure(int reason) {
-				 Log.d(TAG, " Failed to set device name");
-			 }
-		 });
+			mName,
+			new WifiP2pManager.ActionListener() {
+				public void onSuccess() {
+					Log.d(TAG, " device rename success");
+				}
+				public void onFailure(int reason) {
+					Log.d(TAG, " Failed to set device name");
+				}
+			}
+		);
 
 		mWifiP2pManager.setMiracastMode(WifiP2pManager.MIRACAST_SINK);
 
@@ -300,23 +292,15 @@ public class WifiDisplayService extends Service {
 				Log.d(TAG, "Failed to set WFD info with reason " + reason + ".");
 			}
 		});
-	}
 
-	public void p2pDiscoverPeers() {
-		Log.d(TAG, "p2pDiscoverPeers()");
-		if (p2pIsNull()) {
-			Log.w(TAG, "should call p2p initialize at first.");
-			return;
-		}
-
-		mWifiP2pManager.discoverPeers(mChannel, new ActionListener() {
+		mWifiP2pManager.listen(mChannel, true, new ActionListener() {
 			@Override
 			public void onSuccess() {
-				Log.d(TAG, "Successfully discoverPeers.");
+				Log.d(TAG, "Successfully listen.");
 			}
 			@Override
 			public void onFailure(int reason) {
-				Log.d(TAG, "Failed to discoverPeers with reason " + reason + ".");
+				Log.d(TAG, "Failed to listen with reason " + reason + ".");
 			}
 		});
 	}
@@ -330,11 +314,10 @@ public class WifiDisplayService extends Service {
 			mWifiP2pManager.stopPeerDiscovery(mChannel, null);
 			mWifiP2pManager.discoverServices(mChannel, null);
 			mWifiP2pManager.discoverPeers(mChannel, null);
+			mWifiP2pManager.listen(mChannel, false, null);
 			mWifiP2pManager = null;
 			mChannel = null;
-
 		}
-		p2pDiscoverPeers();
 	}
 
 	public boolean p2pDeviceIsConnected(WifiP2pDevice device) {
@@ -385,7 +368,6 @@ public class WifiDisplayService extends Service {
 
 		private void onPeersChanged(Context context, Intent intent) {
 			Log.d(TAG, "***onPeersChanged");
-			//intent.getParcelableExtra(WifiP2pManager.EXTRA_P2P_DEVICE_LIST); or requestPeers anytime
 		}
 
 		private void onConnectionChanged(Context context, Intent intent)  {
@@ -413,10 +395,6 @@ public class WifiDisplayService extends Service {
 				if (mConnected) {
 					mConnected = false;
 					Log.d(TAG, "disconnected");
-					unRegisterBroadcastReceiver();
-					cleanWifiP2pManager();
-					registerBroadcastReceiver();
-					mHandler.removeCallbacks(mConnectingChecker);
 				}
 			}
 
@@ -424,8 +402,6 @@ public class WifiDisplayService extends Service {
 				Log.d(TAG, "connected");
 				if (!mConnected) {
 					mConnected = true;
-					Log.d(TAG, "removeCallbacks --- mConnectingChecker");
-					mHandler.removeCallbacks(mConnectingChecker);
 					if (!mIsSinkOpened) {
 						startWfdSink(context, intent);
 					}
@@ -441,13 +417,6 @@ public class WifiDisplayService extends Service {
 			WifiP2pDevice device = (WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 			Log.d(TAG, "WifiP2pDevice:");
 			Log.d(TAG, device.toString());
-
-			if (mIsWiFiDirectEnabled && !p2pDeviceIsConnected(device)) {
-				if (!mConnected) {
-					Log.d(TAG, "start connecting checker --- do p2pDiscoverPeers");
-					mHandler.postDelayed(mConnectingChecker, 100);
-				}
-			}
 		}
 
 	}
