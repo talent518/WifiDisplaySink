@@ -395,6 +395,9 @@ public class WifiDisplayService extends Service {
 				if (mConnected) {
 					mConnected = false;
 					Log.d(TAG, "disconnected");
+					unRegisterBroadcastReceiver();
+					cleanWifiP2pManager();
+					registerBroadcastReceiver();
 				}
 			}
 
